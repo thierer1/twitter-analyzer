@@ -20,7 +20,7 @@ public class TwitterAnalyzerApp {
 		
 		Validate.notBlank(queryStr, "queryStr must not be blank");
 		
-		System.out.format("Searching Twitter for \"%s\"", queryStr);
+		System.out.format("Searching Twitter for \"%s\"\n", queryStr);
 
 		configService = new SimpleConfigurationServiceImpl();
 		service = new TwitterServiceImpl(configService.getAppToken());
