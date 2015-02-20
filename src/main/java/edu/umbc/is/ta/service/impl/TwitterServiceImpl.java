@@ -19,6 +19,8 @@ import edu.umbc.is.ta.model.impl.TweetImpl;
 import edu.umbc.is.ta.service.TwitterService;
 
 public class TwitterServiceImpl implements TwitterService {
+	
+	private final static int TWITTER_SEARCH_MAX_PAGE_SIZE = 100;
 
 	private final ApplicationToken appToken;
 	
@@ -31,24 +33,77 @@ public class TwitterServiceImpl implements TwitterService {
 	public List<Tweet> search(String queryStr, UserToken forUser) {
 		Validate.notBlank(queryStr, "queryStr cannot be blank");
 		
-		final Twitter endpoint = getEndpoint(forUser);
-		final Query query = new Query(queryStr);
-		final List<Tweet> tweets = new ArrayList<Tweet>();
-		QueryResult result = null; 
+		return search(getEndpoint(forUser), newQuery(queryStr), 
+			new ArrayList<Tweet>());
+	}
+	
+	@Override
+	public List<Tweet> search(String queryStr, UserToken forUser, int limit) {
+		Validate.notBlank(queryStr, "queryStr cannot be blank");
+		Validate.isTrue(limit >= 1, "limit must be greater than 0");
 		
-		try {
-			result = endpoint.search(query);
-		} catch (TwitterException e) {
-			// TODO
+		return search(getEndpoint(forUser), newQuery(queryStr, limit), 
+			new ArrayList<Tweet>(), limit);
+	}
+	
+	private Query newQuery(String queryStr) {
+		return newQuery(queryStr, null);
+	}
+	
+	private Query newQuery(String queryStr, Integer limit) {
+		Validate.notBlank(queryStr);
+		final Query query = new Query(queryStr);
+		
+		if (limit != null) {
+			final int count = limit > TWITTER_SEARCH_MAX_PAGE_SIZE 
+				? TWITTER_SEARCH_MAX_PAGE_SIZE : limit;
+			query.setCount(count);
 		}
 		
-		if (result != null) {
-			for (Status status : result.getTweets()) {
-				tweets.add(new TweetImpl(status));
+		return query;
+	}
+	
+	private final List<Tweet> search(Twitter endpoint, Query query, 
+			List<Tweet> found) {
+		return search(endpoint, query, found, null);
+	}
+	
+	private final List<Tweet> search(Twitter endpoint, Query query, 
+			List<Tweet> found, Integer maxResults) {
+		return search(endpoint, query, found, maxResults, null);
+	}
+	
+	private final List<Tweet> search(Twitter endpoint, Query query, 
+			List<Tweet> found, Integer maxResults, Long startAt) {
+		Validate.notNull(endpoint);
+		Validate.notNull(query);
+		Validate.notNull(found);
+		
+		QueryResult result = null;
+		
+		if (maxResults == null || found.size() < maxResults) {
+			if (startAt != null) {
+				query.setMaxId(startAt - 1);
+			}
+			
+			try {
+				result = endpoint.search(query);
+			} catch (TwitterException e) {
+				// TODO
+				result = null;
+			}
+			
+			if (result != null && result.getCount() > 0) {
+				for (Status status : result.getTweets()) {
+					found.add(new TweetImpl(status));
+				}
+				
+				return search(endpoint, query, found, maxResults, 
+					result.getMaxId());
 			}
 		}
 		
-		return tweets;
+		return found;
 	}
 	
 	protected final Twitter getEndpoint(UserToken forUser) {

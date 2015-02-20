@@ -8,4 +8,5 @@ import edu.umbc.is.ta.model.UserToken;
 public interface TwitterService {
 
 	List<Tweet> search(String queryStr, UserToken forUser);
+	List<Tweet> search(String queryStr, UserToken forUser, int limit);
 }
