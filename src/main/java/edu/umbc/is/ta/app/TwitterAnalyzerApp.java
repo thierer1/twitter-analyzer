@@ -2,6 +2,8 @@ package edu.umbc.is.ta.app;
 
 import java.util.List;
 
+import org.apache.commons.lang3.Validate;
+
 import edu.umbc.is.ta.model.Tweet;
 import edu.umbc.is.ta.service.ConfigurationService;
 import edu.umbc.is.ta.service.TwitterService;
@@ -10,10 +12,15 @@ import edu.umbc.is.ta.service.impl.TwitterServiceImpl;
 
 public class TwitterAnalyzerApp {
 
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
+		final String queryStr = args.length > 0 ? args[0] : "";
 		final ConfigurationService configService;
 		final TwitterService service;
 		final List<Tweet> results;
+		
+		Validate.notBlank(queryStr, "queryStr must not be blank");
+		
+		System.out.format("Searching Twitter for \"%s\"", queryStr);
 
 		configService = new SimpleConfigurationServiceImpl();
 		service = new TwitterServiceImpl(configService.getAppToken());
