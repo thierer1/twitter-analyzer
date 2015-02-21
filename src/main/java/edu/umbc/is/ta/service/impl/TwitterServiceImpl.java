@@ -136,7 +136,9 @@ public class TwitterServiceImpl implements TwitterService {
 						result.getCount(), lowestId);
 				}
 				
-				return search(endpoint, query, found, maxResults, lowestId - 1);
+				if (lowestId != null) {
+					return search(endpoint, query, found, maxResults, lowestId - 1);
+				}
 			}
 		}
 		

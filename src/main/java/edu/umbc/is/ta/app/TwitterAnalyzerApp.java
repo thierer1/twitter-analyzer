@@ -33,10 +33,13 @@ public class TwitterAnalyzerApp {
 			queryLimit);
 		
 		System.out.format("Found %d tweets!\n", results.size());
-		System.out.format("[0]=%s [@%s]\n", results.get(0).getText(), 
-			results.get(0).getUser().getScreenName());
-		System.out.format("[%d]=%s [@%s]\n", queryLimit - 1, 
-			results.get(queryLimit - 1).getText(), 
-			results.get(queryLimit - 1).getUser().getScreenName());
+		
+		if (!results.isEmpty()) {
+			System.out.format("[0]=%s [@%s]\n", results.get(0).getText(), 
+				results.get(0).getUser().getScreenName());
+			System.out.format("[%d]=%s [@%s]\n", results.size() - 1, 
+				results.get(results.size() - 1).getText(), 
+				results.get(results.size() - 1).getUser().getScreenName());
+		}
 	}
 }

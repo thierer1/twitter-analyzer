@@ -6,7 +6,7 @@
 		</Console>
 	</Appenders>
 	<Loggers>
-		<Logger name="edu.umbc.is.ta.service.impl.TwitterServiceImpl" level="trace" additivity="false">
+		<Logger name="edu.umbc.is.ta.service.impl.TwitterServiceImpl" level="debug" additivity="false">
 			<AppenderRef ref="Console"/>
 		</Logger>
 		<Root level="debug">
