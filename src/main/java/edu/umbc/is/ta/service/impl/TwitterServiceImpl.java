@@ -44,29 +44,34 @@ public class TwitterServiceImpl implements TwitterService {
 		Validate.notBlank(queryStr, "queryStr cannot be blank");
 		Validate.isTrue(limit >= 1, "limit must be greater than 0");
 		
-		return search(getEndpoint(forUser), newQuery(queryStr, limit), 
+		return search(getEndpoint(forUser), newQuery(queryStr), 
 			new ArrayList<Tweet>(), limit);
 	}
 	
 	private Query newQuery(String queryStr) {
-		return newQuery(queryStr, null);
+		Validate.notBlank(queryStr);
+		return new Query(queryStr);
 	}
 	
-	private Query newQuery(String queryStr, Integer limit) {
-		Validate.notBlank(queryStr);
-		final Query query = new Query(queryStr);
+	private int getPageSize(int currentSize, Integer limit) {
+		final int resultsPerPage = TWITTER_SEARCH_MAX_PAGE_SIZE;
 		
-		if (limit != null) {
-			final int count = limit > TWITTER_SEARCH_MAX_PAGE_SIZE 
-				? TWITTER_SEARCH_MAX_PAGE_SIZE : limit;
-			query.setCount(count);
-			
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Setting query count={}", count);
-			}
+		if (limit == null) {
+			return resultsPerPage;
 		}
 		
-		return query;
+		final int difference = limit - currentSize;
+		final int pageSize;
+		
+		if (difference < 1) {
+			pageSize = 0;
+		} else if (difference < resultsPerPage) {
+			pageSize = difference;
+		} else {
+			pageSize = resultsPerPage;
+		}
+		
+		return pageSize;
 	}
 	
 	private final List<Tweet> search(Twitter endpoint, Query query, 
@@ -89,8 +94,20 @@ public class TwitterServiceImpl implements TwitterService {
 		Long lowestId = null;
 		
 		if (maxResults == null || found.size() < maxResults) {
+			final int pageSize = getPageSize(found.size(), maxResults);
+			
+			query.setCount(pageSize);
+			
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Setting search pageSize={}", pageSize);
+			}
+			
 			if (startAt != null) {
-				query.setMaxId(startAt - 1);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Setting search maxId={}", startAt);
+				}
+				
+				query.setMaxId(startAt);
 			}
 			
 			try {
@@ -119,7 +136,7 @@ public class TwitterServiceImpl implements TwitterService {
 						result.getCount(), lowestId);
 				}
 				
-				return search(endpoint, query, found, maxResults, lowestId);
+				return search(endpoint, query, found, maxResults, lowestId - 1);
 			}
 		}
 		
