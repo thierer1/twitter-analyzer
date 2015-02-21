@@ -8,12 +8,11 @@ import edu.umbc.is.ta.model.impl.ApplicationTokenImpl;
 import edu.umbc.is.ta.model.impl.UserTokenImpl;
 import edu.umbc.is.ta.service.ConfigurationService;
 
-public class SimpleConfigurationServiceImpl implements ConfigurationService {
-	
-	public static String USER_TOKEN_KEY = "edu.umbc.is.ta.userKey";
-	public static String USER_TOKEN_SECRET = "edu.umbc.is.ta.userSecret";
-	public static String APP_TOKEN_KEY = "edu.umbc.is.ta.appKey";
-	public static String APP_TOKEN_SECRET = "edu.umbc.is.ta.appSecret";
+public class SimpleConfigurationServiceImpl implements ConfigurationService {	
+	public static final String USER_TOKEN_KEY = "edu.umbc.is.ta.userKey";
+	public static final String USER_TOKEN_SECRET = "edu.umbc.is.ta.userSecret";
+	public static final String APP_TOKEN_KEY = "edu.umbc.is.ta.appKey";
+	public static final String APP_TOKEN_SECRET = "edu.umbc.is.ta.appSecret";
 
 	@Override
 	public UserToken getUserToken() {

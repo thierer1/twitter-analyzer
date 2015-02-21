@@ -13,7 +13,7 @@ import edu.umbc.is.ta.service.impl.TwitterServiceImpl;
 
 public class TwitterAnalyzerApp {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {	
 		final String queryStr = args.length > 0 ? args[0] : "";
 		final int queryLimit = args.length > 1 ? NumberUtils.toInt(args[1]) : 0;
 		final ConfigurationService configService;

@@ -18,5 +18,10 @@ public class UserImpl implements User {
 	public String getScreenName() {
 		return screenName;
 	}
+	
+	@Override 
+	public String toString() {
+		return String.format("UserImpl{screenName=\"%s\"}", screenName);
+	}
 
 }

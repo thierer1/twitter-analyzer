@@ -25,5 +25,10 @@ public abstract class AbstractToken implements Token {
 	public String getSecret() {
 		return secret;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("AbstractToken{key=\"%s\", token=\"***\"}", key);
+	}
 
 }

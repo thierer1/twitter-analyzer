@@ -27,5 +27,10 @@ public class TweetImpl implements Tweet {
 	public User getUser() {
 		return user;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("TweetImpl{text=\"%s\", user=%s}", text, user);
+	}
 
 }

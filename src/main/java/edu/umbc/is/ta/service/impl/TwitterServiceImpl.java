@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -19,8 +21,8 @@ import edu.umbc.is.ta.model.impl.TweetImpl;
 import edu.umbc.is.ta.service.TwitterService;
 
 public class TwitterServiceImpl implements TwitterService {
-	
-	private final static int TWITTER_SEARCH_MAX_PAGE_SIZE = 100;
+	private static final Logger LOGGER = LogManager.getLogger(TwitterServiceImpl.class.getName());
+	private static final int TWITTER_SEARCH_MAX_PAGE_SIZE = 100;
 
 	private final ApplicationToken appToken;
 	
@@ -58,6 +60,10 @@ public class TwitterServiceImpl implements TwitterService {
 			final int count = limit > TWITTER_SEARCH_MAX_PAGE_SIZE 
 				? TWITTER_SEARCH_MAX_PAGE_SIZE : limit;
 			query.setCount(count);
+			
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Setting query count={}", count);
+			}
 		}
 		
 		return query;
@@ -89,18 +95,33 @@ public class TwitterServiceImpl implements TwitterService {
 			try {
 				result = endpoint.search(query);
 			} catch (TwitterException e) {
-				// TODO
+				LOGGER.error(e);
 				result = null;
 			}
 			
 			if (result != null && result.getCount() > 0) {
 				for (Status status : result.getTweets()) {
-					found.add(new TweetImpl(status));
+					final Tweet tweet = new TweetImpl(status); 
+					found.add(tweet);
+					
+					if (LOGGER.isTraceEnabled()) {
+						LOGGER.trace("Retrieved tweet: {}", tweet);
+					}
+				}
+				
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Retrieved {} tweets; setting startAt={}", 
+						result.getCount(), result.getMaxId());
 				}
 				
 				return search(endpoint, query, found, maxResults, 
 					result.getMaxId());
 			}
+		}
+		
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Done retrieving; total={}, maxID={}", found.size(),
+				(result != null ? result.getMaxId(): "n/a"));
 		}
 		
 		return found;
