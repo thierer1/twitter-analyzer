@@ -86,6 +86,7 @@ public class TwitterServiceImpl implements TwitterService {
 		Validate.notNull(found);
 		
 		QueryResult result = null;
+		Long lowestId = null;
 		
 		if (maxResults == null || found.size() < maxResults) {
 			if (startAt != null) {
@@ -104,6 +105,10 @@ public class TwitterServiceImpl implements TwitterService {
 					final Tweet tweet = new TweetImpl(status); 
 					found.add(tweet);
 					
+					if (lowestId == null || status.getId() < lowestId) {
+						lowestId = status.getId();
+					}
+					
 					if (LOGGER.isTraceEnabled()) {
 						LOGGER.trace("Retrieved tweet: {}", tweet);
 					}
@@ -111,17 +116,15 @@ public class TwitterServiceImpl implements TwitterService {
 				
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Retrieved {} tweets; setting startAt={}", 
-						result.getCount(), result.getMaxId());
+						result.getCount(), lowestId);
 				}
 				
-				return search(endpoint, query, found, maxResults, 
-					result.getMaxId());
+				return search(endpoint, query, found, maxResults, lowestId);
 			}
 		}
 		
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Done retrieving; total={}, maxID={}", found.size(),
-				(result != null ? result.getMaxId(): "n/a"));
+			LOGGER.debug("Done retrieving; total={}", found.size());
 		}
 		
 		return found;
