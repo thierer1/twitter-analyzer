@@ -35,11 +35,9 @@ public class TwitterAnalyzerApp {
 		System.out.format("Found %d tweets!\n", results.size());
 		
 		if (!results.isEmpty()) {
-			System.out.format("[0]=%s [@%s]\n", results.get(0).getText(), 
-				results.get(0).getUser().getScreenName());
-			System.out.format("[%d]=%s [@%s]\n", results.size() - 1, 
-				results.get(results.size() - 1).getText(), 
-				results.get(results.size() - 1).getUser().getScreenName());
+			System.out.format("[0]=%s\n", results.get(0));
+			System.out.format("[%d]=%s\n", results.size() - 1, 
+				results.get(results.size() - 1));
 		}
 	}
 }
