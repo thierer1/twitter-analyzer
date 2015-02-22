@@ -9,6 +9,9 @@
 		<Logger name="edu.umbc.is.ta.service.impl.TwitterServiceImpl" level="debug" additivity="false">
 			<AppenderRef ref="Console"/>
 		</Logger>
+		<Logger name="edu.umbc.is.ta.service.impl.TwitterAnalyticsServiceImpl" level="debug" additivity="false">
+			<AppenderRef ref="Console"/>
+		</Logger>
 		<Root level="debug">
 			<AppenderRef ref="Console"/>
 		</Root>

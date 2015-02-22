@@ -25,7 +25,7 @@ public class UserImpl implements User {
 		this.numFollowings = numFollowings;
 		this.numTweets = numTweets;
 	}
-	
+
 	public UserImpl(twitter4j.User user) {
 		this(user.getId(), user.getScreenName(), user.getCreatedAt(), 
 			user.getFavouritesCount(), user.getFollowersCount(), 
@@ -73,6 +73,28 @@ public class UserImpl implements User {
 			"createdAt=%s, numFavorites=%d, numFollowers=%d, " + 
 			"numFollowings=%d, numTweets=%d}", id, screenName, createdAt,
 			numFavorites, numFollowers, numFollowings, numTweets);
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserImpl other = (UserImpl) obj;
+		if (id != other.id)
+			return false;
+		return true;
 	}
 
 }
