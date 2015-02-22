@@ -18,7 +18,7 @@ public class TwitterAnalyzerApp {
 
 	public static void main(String[] args) {	
 		final String queryStr = args.length > 0 ? args[0] : "";
-		final int queryLimit = args.length > 1 ? NumberUtils.toInt(args[1]) : 0;
+		final Integer queryLimit = args.length > 1 ? NumberUtils.toInt(args[1]) : null;
 		final ConfigurationService configService;
 		final TwitterService service;
 		final List<Tweet> results;
@@ -26,7 +26,6 @@ public class TwitterAnalyzerApp {
 		final List<User> popularUsers;
 		
 		Validate.notBlank(queryStr, "queryStr must not be blank");
-		Validate.isTrue(queryLimit > 0, "queryLimit must be greater than 0");
 		
 		System.out.format(
 			"Searching Twitter for \"%s\", returning %d results...\n", 
@@ -34,8 +33,13 @@ public class TwitterAnalyzerApp {
 
 		configService = new SimpleConfigurationServiceImpl();
 		service = new TwitterServiceImpl(configService.getAppToken());
-		results = service.search("@umbc", configService.getUserToken(),
-			queryLimit);
+		
+		if (queryLimit != null) {
+			results = service.search(queryStr, configService.getUserToken(),
+				queryLimit);
+		} else {
+			results = service.search(queryStr, configService.getUserToken());
+		}
 		
 		System.out.format("Found %d tweets!\n", results.size());
 		
