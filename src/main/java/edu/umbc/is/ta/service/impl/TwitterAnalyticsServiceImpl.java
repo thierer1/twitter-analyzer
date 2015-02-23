@@ -88,7 +88,13 @@ public class TwitterAnalyticsServiceImpl implements TwitterAnalyticsService {
 	
 	@Override
 	public List<User> getTopRankedUsers(int topN) {
-		return getRankedUsers().subList(0, topN);
+		final List<User> rankedUsers = getRankedUsers();
+		
+		if(rankedUsers.size() > topN) {
+			return rankedUsers.subList(0, topN);
+		} else {
+			return rankedUsers;
+		}
 	}
 	
 	private class TweetListComparator implements Comparator<User> {
