@@ -3,6 +3,7 @@ package edu.umbc.is.ta.model.serializer.impl;
 import org.apache.commons.lang3.Validate;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import edu.umbc.is.ta.model.serializer.Serializer;
 
@@ -21,11 +22,25 @@ public class JsonSerializer<T> implements Serializer<String, T> {
 			return null;
 		}
 		
-		return (new Gson()).toJson(type.cast(obj), obj.getClass());
+		return getParser().toJson(getType().cast(obj), obj.getClass());
 	}
 	
 	@Override
 	public Class<T> getType() {
 		return type;
+	}
+
+	@Override
+	public T deserialize(String obj) {
+		return getParser().fromJson(obj, getType());
+	}
+	
+	public GsonBuilder registerTypes(GsonBuilder forBuilder) {
+		Validate.notNull(forBuilder, "forBuilder must not be null");
+		return forBuilder;
+	}
+	
+	protected Gson getParser() {
+		return new Gson();
 	}
 }

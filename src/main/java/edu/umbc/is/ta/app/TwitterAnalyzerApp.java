@@ -8,13 +8,25 @@ import org.apache.commons.lang3.math.NumberUtils;
 import edu.umbc.is.ta.model.Tweet;
 import edu.umbc.is.ta.model.User;
 import edu.umbc.is.ta.service.ConfigurationService;
+import edu.umbc.is.ta.service.SerializerService;
 import edu.umbc.is.ta.service.TwitterAnalyticsService;
 import edu.umbc.is.ta.service.TwitterService;
+import edu.umbc.is.ta.service.impl.JsonSerializerServiceImpl;
 import edu.umbc.is.ta.service.impl.SimpleConfigurationServiceImpl;
 import edu.umbc.is.ta.service.impl.TwitterAnalyticsServiceImpl;
 import edu.umbc.is.ta.service.impl.TwitterServiceImpl;
 
 public class TwitterAnalyzerApp {
+	
+	public static String toJson(List<Tweet> tweets) {
+		final SerializerService<String> service = new JsonSerializerServiceImpl();
+		return service.serialize(tweets);
+	}
+	
+	public static List<Tweet> fromJson(String tweetsJson) {
+		final SerializerService<String> service = new JsonSerializerServiceImpl();
+		return service.deserializeArray(tweetsJson, Tweet.class);
+	}
 
 	public static void main(String[] args) {	
 		final String queryStr = args.length > 0 ? args[0] : "";

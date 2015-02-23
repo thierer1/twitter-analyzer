@@ -60,11 +60,11 @@ public class TweetImpl implements Tweet {
 		}
 	}
 	
-	private void addHashTag(String hashTag) {
+	public void addHashTag(String hashTag) {
 		this.hashTags.add(hashTag);
 	}
 	
-	private void setRetweetOf(Tweet retweetOf) {
+	public void setRetweetOf(Tweet retweetOf) {
 		this.retweetOf = retweetOf;
 	}
 	
