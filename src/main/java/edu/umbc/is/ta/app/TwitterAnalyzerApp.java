@@ -3,9 +3,10 @@ package edu.umbc.is.ta.app;
 import java.util.List;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.google.common.collect.Lists;
 
 import edu.umbc.is.ta.model.Tweet;
 import edu.umbc.is.ta.model.User;
@@ -116,7 +117,7 @@ public class TwitterAnalyzerApp {
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException {	
+	public static void main(String[] args) {	
 		final String queryStr = args.length > 0 ? args[0] : "";
 		
 		Validate.notBlank(queryStr, "queryStr must not be blank");
@@ -130,8 +131,7 @@ public class TwitterAnalyzerApp {
 		
 		// below is for streaming API
 		final StreamingConfigurationService configService = 
-			new StreamingConfigurationServiceImpl(queryStr, 
-			(args.length > 1 ? NumberUtils.toInt(args[1]) : 1));
+			new StreamingConfigurationServiceImpl(Lists.newArrayList(args));
 
 		stream(configService);
 	}

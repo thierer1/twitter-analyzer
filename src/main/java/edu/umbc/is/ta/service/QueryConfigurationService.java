@@ -4,4 +4,5 @@ public interface QueryConfigurationService extends ConfigurationService {
 
 	boolean hasLimit();
 	int getNumResults();
+	String getQuery();
 }

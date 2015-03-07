@@ -47,17 +47,17 @@ public class TwitterStreamingServiceImpl implements TwitterStreamingService {
 		this.numThreads = numThreads;
 	}
 	
-	public TwitterStreamingClient startCollecting(String queryStr, UserToken userToken) {
-		Validate.notBlank(queryStr, "queryStr must not be blank");
+	public TwitterStreamingClient startCollecting(List<String> query, UserToken userToken) {
+		Validate.notNull(query, "query most not be blank");
+		Validate.isTrue(!query.isEmpty(), "query must not be empty");
 		Validate.notNull(userToken, "userToken must not be null");
-		final List<String> terms = Lists.newArrayList(queryStr);
 		
 		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Listening for: {}", terms);
+			LOGGER.debug("Listening for: {}", query);
 		}
 		
 		final List<StatusListener> listeners = Lists.newArrayList((StatusListener) (new BasicStatusListener()));
-		final Twitter4jStatusClient client = getStatuses(terms, userToken,
+		final Twitter4jStatusClient client = getStatuses(query, userToken,
 			listeners, getNumThreads());
 		
 		return new TwitterStreamingClientImpl(client);

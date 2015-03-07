@@ -7,5 +7,4 @@ public interface ConfigurationService {
 
 	UserToken getUserToken();
 	ApplicationToken getAppToken();
-	String getQuery();
 }
