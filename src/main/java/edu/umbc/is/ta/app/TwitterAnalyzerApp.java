@@ -15,6 +15,7 @@ import edu.umbc.is.ta.service.impl.JsonSerializerServiceImpl;
 import edu.umbc.is.ta.service.impl.SimpleConfigurationServiceImpl;
 import edu.umbc.is.ta.service.impl.TwitterAnalyticsServiceImpl;
 import edu.umbc.is.ta.service.impl.TwitterServiceImpl;
+import edu.umbc.is.ta.service.impl.TwitterStreamingServiceImpl;
 
 public class TwitterAnalyzerApp {
 	
@@ -28,7 +29,7 @@ public class TwitterAnalyzerApp {
 		return service.deserializeArray(tweetsJson, Tweet.class);
 	}
 
-	public static void main(String[] args) {	
+	public static void main(String[] args) throws InterruptedException {	
 		final String queryStr = args.length > 0 ? args[0] : "";
 		final Integer queryLimit = args.length > 1 ? NumberUtils.toInt(args[1]) : null;
 		final ConfigurationService configService;
@@ -44,32 +45,36 @@ public class TwitterAnalyzerApp {
 			queryStr, queryLimit);
 
 		configService = new SimpleConfigurationServiceImpl();
-		service = new TwitterServiceImpl(configService.getAppToken());
 		
-		if (queryLimit != null) {
-			results = service.search(queryStr, configService.getUserToken(),
-				queryLimit);
-		} else {
-			results = service.search(queryStr, configService.getUserToken());
-		}
+		TwitterStreamingServiceImpl.test(configService.getAppToken(), configService.getUserToken());
 		
-		System.out.format("Found %d tweets!\n", results.size());
 		
-		if (!results.isEmpty()) {
-			System.out.format("[0]=%s\n", results.get(0));
-			System.out.format("[%d]=%s\n", results.size() - 1, 
-				results.get(results.size() - 1));
-		}
-		
-		analyticsService.addTweets(results);
-		popularUsers = analyticsService.getTopRankedUsers(5);
-		
-		System.out.format("Found %d users!\n", analyticsService.getNumUsers());
-		
-		for (User popularUser : popularUsers) {
-			final int tweetsForUser = analyticsService.getNumTweets(popularUser);
-			System.out.format("%5d\t@%s\n", tweetsForUser,
-				popularUser.getScreenName());
-		}
+//		service = new TwitterServiceImpl(configService.getAppToken());
+//		
+//		if (queryLimit != null) {
+//			results = service.search(queryStr, configService.getUserToken(),
+//				queryLimit);
+//		} else {
+//			results = service.search(queryStr, configService.getUserToken());
+//		}
+//		
+//		System.out.format("Found %d tweets!\n", results.size());
+//		
+//		if (!results.isEmpty()) {
+//			System.out.format("[0]=%s\n", results.get(0));
+//			System.out.format("[%d]=%s\n", results.size() - 1, 
+//				results.get(results.size() - 1));
+//		}
+//		
+//		analyticsService.addTweets(results);
+//		popularUsers = analyticsService.getTopRankedUsers(5);
+//		
+//		System.out.format("Found %d users!\n", analyticsService.getNumUsers());
+//		
+//		for (User popularUser : popularUsers) {
+//			final int tweetsForUser = analyticsService.getNumTweets(popularUser);
+//			System.out.format("%5d\t@%s\n", tweetsForUser,
+//				popularUser.getScreenName());
+//		}
 	}
 }
