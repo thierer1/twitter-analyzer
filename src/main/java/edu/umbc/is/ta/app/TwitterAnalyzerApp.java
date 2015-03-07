@@ -11,6 +11,8 @@ import edu.umbc.is.ta.service.ConfigurationService;
 import edu.umbc.is.ta.service.SerializerService;
 import edu.umbc.is.ta.service.TwitterAnalyticsService;
 import edu.umbc.is.ta.service.TwitterService;
+import edu.umbc.is.ta.service.TwitterStreamingClient;
+import edu.umbc.is.ta.service.TwitterStreamingService;
 import edu.umbc.is.ta.service.impl.JsonSerializerServiceImpl;
 import edu.umbc.is.ta.service.impl.SimpleConfigurationServiceImpl;
 import edu.umbc.is.ta.service.impl.TwitterAnalyticsServiceImpl;
@@ -37,6 +39,8 @@ public class TwitterAnalyzerApp {
 		final List<Tweet> results;
 		final TwitterAnalyticsService analyticsService = new TwitterAnalyticsServiceImpl();
 		final List<User> popularUsers;
+		final TwitterStreamingService streamingService;
+		final TwitterStreamingClient streamingClient;
 		
 		Validate.notBlank(queryStr, "queryStr must not be blank");
 		
@@ -45,8 +49,16 @@ public class TwitterAnalyzerApp {
 			queryStr, queryLimit);
 
 		configService = new SimpleConfigurationServiceImpl();
+		streamingService = new TwitterStreamingServiceImpl(configService.getAppToken());
+		streamingClient = streamingService.startCollecting("houseofcards", configService.getUserToken());
 		
-		TwitterStreamingServiceImpl.test(configService.getAppToken(), configService.getUserToken());
+		Thread.sleep(15000);
+		
+		System.out.println("Done collecting, time to stop...");
+		
+		streamingClient.stop();
+		
+		System.out.println("Done!");
 		
 		
 //		service = new TwitterServiceImpl(configService.getAppToken());

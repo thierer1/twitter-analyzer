@@ -25,9 +25,11 @@ import com.twitter.hbc.twitter4j.Twitter4jStatusClient;
 
 import edu.umbc.is.ta.model.ApplicationToken;
 import edu.umbc.is.ta.model.UserToken;
+import edu.umbc.is.ta.service.TwitterStreamingClient;
+import edu.umbc.is.ta.service.TwitterStreamingService;
 import edu.umbc.is.ta.service.impl.listener.BasicStatusListener;
 
-public class TwitterStreamingServiceImpl {
+public class TwitterStreamingServiceImpl implements TwitterStreamingService {
 	
 	private static final Logger LOGGER = LogManager.getLogger(TwitterStreamingServiceImpl.class.getName());
 	
@@ -38,24 +40,14 @@ public class TwitterStreamingServiceImpl {
 		this.appToken = appToken;
 	}
 	
-	private void getStatuses(String queryStr, UserToken userToken) throws InterruptedException {
+	public TwitterStreamingClient startCollecting(String queryStr, UserToken userToken) {
 		final List<String> terms = Lists.newArrayList(queryStr);
 		final List<StatusListener> listeners = Lists.newArrayList((StatusListener) (new BasicStatusListener()));
 		final int numThreads = 1;
 		final Twitter4jStatusClient client = getStatuses(terms, userToken,
 			listeners, numThreads);
 		
-		Thread.sleep(15000);
-		
-		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Done collecting, time to stop...");
-		}
-		
-		client.stop();
-		
-		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Client connections closed");
-		}
+		return new TwitterStreamingClientImpl(client);
 	}
 	
 	private Twitter4jStatusClient getStatuses(List<String> terms, 
@@ -94,10 +86,5 @@ public class TwitterStreamingServiceImpl {
 			.authentication(auth)
 			.endpoint(endpoint)
 			.processor(new StringDelimitedProcessor(msgQueue))).build();
-	}
-
-	public static void test(ApplicationToken appToken, UserToken userToken) throws InterruptedException {
-		final TwitterStreamingServiceImpl service = new TwitterStreamingServiceImpl(appToken);
-		service.getStatuses("houseofcards", userToken);
 	}
 }
