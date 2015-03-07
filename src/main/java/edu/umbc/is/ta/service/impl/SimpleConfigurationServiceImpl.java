@@ -14,6 +14,13 @@ public class SimpleConfigurationServiceImpl implements ConfigurationService {
 	public static final String APP_TOKEN_KEY = "edu.umbc.is.ta.appKey";
 	public static final String APP_TOKEN_SECRET = "edu.umbc.is.ta.appSecret";
 
+	private final String query;
+	
+	public SimpleConfigurationServiceImpl(String query) {
+		Validate.notBlank(query, "query must not be blank");
+		this.query = query;
+	}
+	
 	@Override
 	public UserToken getUserToken() {
 		final String key = System.getProperty(USER_TOKEN_KEY);
@@ -42,6 +49,11 @@ public class SimpleConfigurationServiceImpl implements ConfigurationService {
 			APP_TOKEN_SECRET);
 		
 		return new ApplicationTokenImpl(key, secret);
+	}
+	
+	@Override 
+	public String getQuery() {
+		return query;
 	}
 
 }

@@ -32,22 +32,39 @@ import edu.umbc.is.ta.service.impl.listener.BasicStatusListener;
 public class TwitterStreamingServiceImpl implements TwitterStreamingService {
 	
 	private static final Logger LOGGER = LogManager.getLogger(TwitterStreamingServiceImpl.class.getName());
+	private static final int DEFAULT_NUM_THREADS = 1;
 	
 	private final ApplicationToken appToken;
+	private final int numThreads;
 	
 	public TwitterStreamingServiceImpl(ApplicationToken appToken) {
+		this(appToken, DEFAULT_NUM_THREADS);
+	}
+	
+	public TwitterStreamingServiceImpl(ApplicationToken appToken, int numThreads) {
 		Validate.notNull(appToken, "appToken must not be null");
 		this.appToken = appToken;
+		this.numThreads = numThreads;
 	}
 	
 	public TwitterStreamingClient startCollecting(String queryStr, UserToken userToken) {
+		Validate.notBlank(queryStr, "queryStr must not be blank");
+		Validate.notNull(userToken, "userToken must not be null");
 		final List<String> terms = Lists.newArrayList(queryStr);
+		
+		if(LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Listening for: {}", terms);
+		}
+		
 		final List<StatusListener> listeners = Lists.newArrayList((StatusListener) (new BasicStatusListener()));
-		final int numThreads = 1;
 		final Twitter4jStatusClient client = getStatuses(terms, userToken,
-			listeners, numThreads);
+			listeners, getNumThreads());
 		
 		return new TwitterStreamingClientImpl(client);
+	}
+	
+	public int getNumThreads() {
+		return numThreads;
 	}
 	
 	private Twitter4jStatusClient getStatuses(List<String> terms, 
