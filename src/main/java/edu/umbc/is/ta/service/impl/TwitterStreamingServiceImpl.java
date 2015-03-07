@@ -1,5 +1,6 @@
 package edu.umbc.is.ta.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
@@ -11,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import twitter4j.StatusListener;
 
-import com.google.common.collect.Lists;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -27,7 +27,6 @@ import edu.umbc.is.ta.model.ApplicationToken;
 import edu.umbc.is.ta.model.UserToken;
 import edu.umbc.is.ta.service.TwitterStreamingClient;
 import edu.umbc.is.ta.service.TwitterStreamingService;
-import edu.umbc.is.ta.service.impl.listener.BasicStatusListener;
 
 public class TwitterStreamingServiceImpl implements TwitterStreamingService {
 	
@@ -36,6 +35,7 @@ public class TwitterStreamingServiceImpl implements TwitterStreamingService {
 	
 	private final ApplicationToken appToken;
 	private final int numThreads;
+	private final List<StatusListener> listeners;
 	
 	public TwitterStreamingServiceImpl(ApplicationToken appToken) {
 		this(appToken, DEFAULT_NUM_THREADS);
@@ -45,6 +45,7 @@ public class TwitterStreamingServiceImpl implements TwitterStreamingService {
 		Validate.notNull(appToken, "appToken must not be null");
 		this.appToken = appToken;
 		this.numThreads = numThreads;
+		this.listeners = new ArrayList<StatusListener>();
 	}
 	
 	public TwitterStreamingClient startCollecting(List<String> query, UserToken userToken) {
@@ -56,7 +57,7 @@ public class TwitterStreamingServiceImpl implements TwitterStreamingService {
 			LOGGER.debug("Listening for: {}", query);
 		}
 		
-		final List<StatusListener> listeners = Lists.newArrayList((StatusListener) (new BasicStatusListener()));
+		final List<StatusListener> listeners = getListeners();
 		final Twitter4jStatusClient client = getStatuses(query, userToken,
 			listeners, getNumThreads());
 		
@@ -65,6 +66,15 @@ public class TwitterStreamingServiceImpl implements TwitterStreamingService {
 	
 	public int getNumThreads() {
 		return numThreads;
+	}
+	
+	@Override
+	public void addListener(StatusListener statusListener) {
+		listeners.add(statusListener);
+	}
+	
+	private List<StatusListener> getListeners() {
+		return listeners;
 	}
 	
 	private Twitter4jStatusClient getStatuses(List<String> terms, 

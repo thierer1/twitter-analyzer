@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 
 import edu.umbc.is.ta.model.Tweet;
 import edu.umbc.is.ta.model.User;
+import edu.umbc.is.ta.model.serializer.impl.TweetMongoSerializer;
 import edu.umbc.is.ta.service.QueryConfigurationService;
 import edu.umbc.is.ta.service.SerializerService;
 import edu.umbc.is.ta.service.StreamingConfigurationService;
@@ -18,10 +19,12 @@ import edu.umbc.is.ta.service.TwitterService;
 import edu.umbc.is.ta.service.TwitterStreamingClient;
 import edu.umbc.is.ta.service.TwitterStreamingService;
 import edu.umbc.is.ta.service.impl.JsonSerializerServiceImpl;
+import edu.umbc.is.ta.service.impl.MongoDataServiceImpl;
 import edu.umbc.is.ta.service.impl.StreamingConfigurationServiceImpl;
 import edu.umbc.is.ta.service.impl.TwitterAnalyticsServiceImpl;
 import edu.umbc.is.ta.service.impl.TwitterServiceImpl;
 import edu.umbc.is.ta.service.impl.TwitterStreamingServiceImpl;
+import edu.umbc.is.ta.service.impl.listener.StatusPersisterListener;
 
 public class TwitterAnalyzerApp {
 	
@@ -37,7 +40,7 @@ public class TwitterAnalyzerApp {
 		return service.deserializeArray(tweetsJson, Tweet.class);
 	}
 	
-	public static void stream(StreamingConfigurationService configService) {
+	public static void stream(StreamingConfigurationService configService) throws Exception {
 		Validate.notNull(configService, "configService cannot be null");
 		final TwitterStreamingService service = new TwitterStreamingServiceImpl(
 			configService.getAppToken(), configService.getNumThreads());
@@ -47,6 +50,11 @@ public class TwitterAnalyzerApp {
 		if(LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Setting up streaming...");
 		}
+	
+		service.addListener(new StatusPersisterListener(
+			new MongoDataServiceImpl<Tweet>(
+				MongoDataServiceImpl.getDatabaseConnection("localhost", 27017, "twitterAnalyzer"), 
+				new TweetMongoSerializer())));
 		
 		client = service.startCollecting(configService.getQuery(),
 			configService.getUserToken());
@@ -117,7 +125,7 @@ public class TwitterAnalyzerApp {
 		}
 	}
 
-	public static void main(String[] args) {	
+	public static void main(String[] args) throws Exception {	
 		final String queryStr = args.length > 0 ? args[0] : "";
 		
 		Validate.notBlank(queryStr, "queryStr must not be blank");

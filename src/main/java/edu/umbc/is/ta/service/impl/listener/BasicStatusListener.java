@@ -15,12 +15,12 @@ public class BasicStatusListener implements StatusListener {
 	@Override
 	public void onException(Exception ex) {
 		LOGGER.error(ex);
+		ex.printStackTrace();
 	}
 
 	@Override
 	public void onStatus(Status status) {
 		LOGGER.info("Found status: {}", status);
-		System.out.println(status.getText());
 	}
 
 	@Override
@@ -41,7 +41,6 @@ public class BasicStatusListener implements StatusListener {
 
 	@Override
 	public void onStallWarning(StallWarning warning) {
-		// TODO Auto-generated method stub
 		LOGGER.warn("Stall warning: {} ({}%)", warning.getMessage(),
 			warning.getPercentFull());
 	}
