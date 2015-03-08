@@ -4,6 +4,12 @@
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
 		</Console>
+		<File name="ErrFile" fileName="logs/err.log">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+		</File>
+		<Async name="ErrFileAsync">
+			<AppenderRef ref="ErrFile" />
+		</Async>
 	</Appenders>
 	<Loggers>
 		<Logger name="edu.umbc.is.ta.service.impl.TwitterServiceImpl" level="debug" additivity="false">
@@ -12,8 +18,22 @@
 		<Logger name="edu.umbc.is.ta.service.impl.TwitterAnalyticsServiceImpl" level="debug" additivity="false">
 			<AppenderRef ref="Console"/>
 		</Logger>
-		<Root level="debug">
+		<Logger name="edu.umbc.is.ta.service.impl.TwitterStreamingServiceImpl" level="debug" additivity="false">
 			<AppenderRef ref="Console"/>
+			<AppenderRef ref="ErrFileAsync"/>
+		</Logger>
+		<Logger name="edu.umbc.is.ta.service.impl.MongoCollectionDataServiceImpl" level="debug" additivity="false">
+			<AppenderRef ref="Console"/>
+			<AppenderRef ref="ErrFileAsync"/>
+		</Logger>
+		<Logger name="edu.umbc.is.ta.service.impl.listener.BasicStatusListener" level="debug" additivity="false">
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="edu.umbc.is.ta.service.impl.listener.StatusPersisterListener" level="debug" additivity="false">
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Root level="warn">
+			<AppenderRef ref="ErrFileAsync"/>
 		</Root>
 	</Loggers>
 </Configuration>
