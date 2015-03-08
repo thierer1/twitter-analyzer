@@ -6,5 +6,6 @@ public interface StreamingConfigurationService extends ConfigurationService {
 
 	int getNumThreads();
 	List<String> getQuery();
+	String getCollectionName();
 	
 }

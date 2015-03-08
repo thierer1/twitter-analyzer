@@ -19,6 +19,7 @@ import edu.umbc.is.ta.service.TwitterService;
 import edu.umbc.is.ta.service.TwitterStreamingClient;
 import edu.umbc.is.ta.service.TwitterStreamingService;
 import edu.umbc.is.ta.service.impl.JsonSerializerServiceImpl;
+import edu.umbc.is.ta.service.impl.MongoCollectionDataServiceImpl;
 import edu.umbc.is.ta.service.impl.MongoDataServiceImpl;
 import edu.umbc.is.ta.service.impl.StreamingConfigurationServiceImpl;
 import edu.umbc.is.ta.service.impl.TwitterAnalyticsServiceImpl;
@@ -52,9 +53,9 @@ public class TwitterAnalyzerApp {
 		}
 	
 		service.addListener(new StatusPersisterListener(
-			new MongoDataServiceImpl<Tweet>(
+			new MongoCollectionDataServiceImpl<Tweet>(
 				MongoDataServiceImpl.getDatabaseConnection("localhost", 27017, "twitterAnalyzer"), 
-				new TweetMongoSerializer())));
+				new TweetMongoSerializer(), configService.getCollectionName())));
 		
 		client = service.startCollecting(configService.getQuery(),
 			configService.getUserToken());

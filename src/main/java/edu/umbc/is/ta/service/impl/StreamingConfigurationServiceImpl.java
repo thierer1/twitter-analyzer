@@ -9,6 +9,7 @@ import edu.umbc.is.ta.service.StreamingConfigurationService;
 
 public class StreamingConfigurationServiceImpl extends SimpleConfigurationServiceImpl implements StreamingConfigurationService {
 	public static final String NUM_THREADS_KEY = "edu.umbc.is.ta.numThreads";
+	public static final String COLLECTION_NAME = "edu.umbc.is.ta.collection";
 	
 	private List<String> query;
 	
@@ -26,6 +27,15 @@ public class StreamingConfigurationServiceImpl extends SimpleConfigurationServic
 		Validate.isTrue(numThreads > 0, "numThreads must be greater than 0");
 		
 		return numThreads;
+	}
+	
+	@Override
+	public String getCollectionName() {
+		final String collectionName = System.getProperty(COLLECTION_NAME);
+		
+		Validate.notBlank(collectionName, "collectionName must not be blank");
+		
+		return collectionName;
 	}
 
 	@Override
